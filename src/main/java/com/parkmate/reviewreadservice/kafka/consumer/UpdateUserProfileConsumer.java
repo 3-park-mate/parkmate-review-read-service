@@ -15,7 +15,7 @@ public class UpdateUserProfileConsumer {
     private final ReviewReadIntegrationService reviewReadIntegrationService;
 
     @KafkaListener(
-            topics = "update-user-profile",
+            topics = "user.user-profile.updated",
             groupId = "review-read-group",
             containerFactory = "updateUserProfileEventKafkaListener"
     )

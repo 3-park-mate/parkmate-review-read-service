@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,27 +20,31 @@ public class ReviewReadServiceImpl implements ReviewReadService {
 
     private final ReviewMongoRepository reviewMongoRepository;
 
+    @Transactional
     @Override
     public ReviewListResponseDto getReviews(String parkingLotUuid, String cursor, int size) {
-        Pageable pageable = PageRequest.of(0, size);
+        Pageable pageable = PageRequest.of(0, size + 1); // +1 for hasNext check
         List<ReviewRead> reviews;
 
         if (cursor == null) {
             reviews = reviewMongoRepository.findByParkingLotUuidOrderByCreatedAtDesc(parkingLotUuid, pageable);
         } else {
-
             Instant cursorInstant = LocalDateTime.parse(cursor)
                     .atZone(ZoneId.systemDefault())
                     .toInstant();
-            reviews = reviewMongoRepository.findByParkingLotUuidAndCreatedAtBeforeOrderByCreatedAtDesc(parkingLotUuid, cursorInstant, pageable);
+            reviews = reviewMongoRepository.findByParkingLotUuidAndCreatedAtBeforeOrderByCreatedAtDesc(
+                    parkingLotUuid, cursorInstant, pageable);
         }
 
-        String nextCursor = reviews.isEmpty() ? null : reviews.get(reviews.size() - 1).getCreatedAt().toString();
+        boolean hasNext = reviews.size() > size;
+        List<ReviewRead> pageReviews = hasNext ? reviews.subList(0, size) : reviews;
 
-        List<ReviewListItemDto> content = reviews.stream()
+        String nextCursor = pageReviews.isEmpty() ? null : pageReviews.get(pageReviews.size() - 1).getCreatedAt().toString();
+
+        List<ReviewListItemDto> content = pageReviews.stream()
                 .map(ReviewListItemDto::fromEntity)
                 .toList();
 
-        return ReviewListResponseDto.of(nextCursor, content);
+        return ReviewListResponseDto.of(nextCursor, hasNext, content);
     }
 }

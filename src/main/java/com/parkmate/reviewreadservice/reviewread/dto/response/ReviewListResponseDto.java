@@ -10,17 +10,24 @@ import java.util.List;
 public class ReviewListResponseDto {
 
     private String cursor;
+    private boolean hasNext;
     private List<ReviewListItemDto> content;
 
     @Builder
-    private ReviewListResponseDto(String cursor, List<ReviewListItemDto> content) {
+    private ReviewListResponseDto(String cursor,
+                                  boolean hasNext,
+                                  List<ReviewListItemDto> content) {
         this.cursor = cursor;
+        this.hasNext = hasNext;
         this.content = content;
     }
 
-    public static ReviewListResponseDto of(String cursor, List<ReviewListItemDto> content) {
+    public static ReviewListResponseDto of(String cursor,
+                                           boolean hasNext,
+                                           List<ReviewListItemDto> content) {
         return ReviewListResponseDto.builder()
                 .cursor(cursor)
+                .hasNext(hasNext)
                 .content(content)
                 .build();
     }

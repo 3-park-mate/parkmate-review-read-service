@@ -21,7 +21,7 @@ public class ReviewReadIntegrationServiceImpl implements ReviewReadIntegrationSe
     @Override
     public void createReviewReadDocument(CreateReviewEvent reviewEvent, CreateReviewJoinUserEvent userEvent) {
         ReviewRead reviewRead = ReviewRead.builder()
-                .reviewId(reviewEvent.getReviewId())
+                .reviewUuid(reviewEvent.getReviewUuid())
                 .userUuid(reviewEvent.getUserUuid())
                 .name(userEvent.getName())
                 .parkingLotUuid(reviewEvent.getParkingLotUuid())
@@ -33,7 +33,7 @@ public class ReviewReadIntegrationServiceImpl implements ReviewReadIntegrationSe
                 .build();
 
         reviewMongoRepository.save(reviewRead);
-        log.info("[Mongo] 저장 완료: {}", reviewRead.getReviewId());
+        log.info("[Mongo] 저장 완료: {}", reviewRead.getReviewUuid());
     }
 
     @Transactional

@@ -13,7 +13,7 @@ public interface ReviewMongoRepository extends MongoRepository<ReviewRead, Strin
 
     List<ReviewRead> findByParkingLotUuidOrderByCreatedAtDesc(String parkingLotUuid, Pageable pageable);
 
-    List<ReviewRead> findByParkingLotUuidAndCreatedAtBeforeOrderByCreatedAtDesc(String parkingLotUuid, Instant createdAt, Pageable pageable);
+    List<ReviewRead> findByParkingLotUuidAndCreatedAtBeforeOrderByCreatedAtDesc(String parkingLotUuid, Instant createdAt,Pageable pageable);
 
     List<ReviewRead> findAllByUserUuid(String userUuid);
 }

@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KafkaReviewReadConsumer {
+public class ReviewReadConsumer {
 
     private final ReviewReadIntegrationService reviewReadIntegrationService;
 
     private final ConcurrentHashMap<String, CompletableFuture<CreateReviewEvent>> reviewFutureMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, CompletableFuture<CreateReviewJoinUserEvent>> userFutureMap = new ConcurrentHashMap<>();
 
-    @KafkaListener(topics = "create-review", groupId = "review-read-group", containerFactory = "createReviewEventKafkaListener")
+    @KafkaListener(topics = "review.review.created", groupId = "review-read-group", containerFactory = "createReviewEventKafkaListener")
     public void listenCreateReview(CreateReviewEvent event) {
         String userUuid = event.getUserUuid();
         log.info("[Kafka] Received CreateReviewEvent: {}", event);
@@ -29,7 +29,7 @@ public class KafkaReviewReadConsumer {
         attemptJoin(userUuid);
     }
 
-    @KafkaListener(topics = "create-review-join-user", groupId = "review-read-group", containerFactory = "createReviewJoinUserEventKafkaListener")
+    @KafkaListener(topics = "user.review-join-user.created", groupId = "review-read-group", containerFactory = "createReviewJoinUserEventKafkaListener")
     public void listenCreateReviewJoinUser(CreateReviewJoinUserEvent event) {
         String userUuid = event.getUserUuid();
         log.info("[Kafka] Received CreateReviewJoinUserEvent: {}", event);

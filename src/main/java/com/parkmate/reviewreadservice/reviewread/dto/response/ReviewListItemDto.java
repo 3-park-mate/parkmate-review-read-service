@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ReviewListItemDto {
 
-    private String reviewId;
+    private String reviewUuid;
     private String userUuid;
     private String name;
     private String content;
@@ -20,7 +20,7 @@ public class ReviewListItemDto {
     private int dislikeCount;
 
     @Builder
-    private ReviewListItemDto(String reviewId,
+    private ReviewListItemDto(String reviewUuid,
                               String userUuid,
                               String name,
                               String content,
@@ -28,7 +28,7 @@ public class ReviewListItemDto {
                               int rating,
                               int likeCount,
                               int dislikeCount) {
-        this.reviewId = reviewId;
+        this.reviewUuid = reviewUuid;
         this.userUuid = userUuid;
         this.name = name;
         this.content = content;
@@ -40,7 +40,7 @@ public class ReviewListItemDto {
 
     public static ReviewListItemDto fromEntity(ReviewRead reviewRead) {
         return ReviewListItemDto.builder()
-                .reviewId(reviewRead.getReviewId())
+                .reviewUuid(reviewRead.getReviewUuid())
                 .userUuid(reviewRead.getUserUuid())
                 .name(reviewRead.getName())
                 .content(reviewRead.getContent())

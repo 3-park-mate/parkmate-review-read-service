@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateReviewEvent {
 
-    private String reviewId;
+    private String reviewUuid;
     private String userUuid;
     private String parkingLotUuid;
 
@@ -27,7 +27,7 @@ public class CreateReviewEvent {
 
     @Builder
     private CreateReviewEvent(
-            String reviewId,
+            String reviewUuid,
             String userUuid,
             String parkingLotUuid,
             String content,
@@ -37,7 +37,7 @@ public class CreateReviewEvent {
             int dislikeCount,
             LocalDateTime createdAt
     ) {
-        this.reviewId = reviewId;
+        this.reviewUuid = reviewUuid;
         this.userUuid = userUuid;
         this.parkingLotUuid = parkingLotUuid;
         this.content = content;

@@ -15,7 +15,7 @@ import java.util.List;
 public class ReviewRead extends BaseEntity {
 
    @Id
-    private String reviewId;
+    private String reviewUuid;
 
     private String userUuid;
     private String name;
@@ -27,7 +27,7 @@ public class ReviewRead extends BaseEntity {
     private int rating;
 
     @Builder
-    public ReviewRead(String reviewId,
+    public ReviewRead(String reviewUuid,
                       String userUuid,
                       String name,
                       String parkingLotUuid,
@@ -37,7 +37,7 @@ public class ReviewRead extends BaseEntity {
                       int dislikeCount,
                       int rating) {
 
-        this.reviewId = reviewId;
+        this.reviewUuid = reviewUuid;
         this.userUuid = userUuid;
         this.name = name;
         this.parkingLotUuid = parkingLotUuid;
@@ -54,6 +54,6 @@ public class ReviewRead extends BaseEntity {
 
     @Override
     public String getId() {
-        return this.reviewId;
+        return this.reviewUuid;
     }
 }
