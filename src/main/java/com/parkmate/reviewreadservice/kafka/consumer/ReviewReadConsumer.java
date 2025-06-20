@@ -20,7 +20,7 @@ public class ReviewReadConsumer {
     private final ConcurrentHashMap<String, CompletableFuture<CreateReviewEvent>> reviewFutureMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, CompletableFuture<CreateReviewJoinUserEvent>> userFutureMap = new ConcurrentHashMap<>();
 
-    @KafkaListener(topics = "review.review.created", groupId = "review-read-group", containerFactory = "createReviewEventKafkaListener")
+    @KafkaListener(topics = "review.review.created", groupId = "review-read.create-review", containerFactory = "createReviewEventKafkaListener")
     public void listenCreateReview(CreateReviewEvent event) {
         String userUuid = event.getUserUuid();
         log.info("[Kafka] Received CreateReviewEvent: {}", event);
@@ -29,7 +29,7 @@ public class ReviewReadConsumer {
         attemptJoin(userUuid);
     }
 
-    @KafkaListener(topics = "user.review-join-user.created", groupId = "review-read-group", containerFactory = "createReviewJoinUserEventKafkaListener")
+    @KafkaListener(topics = "user.review-join-user.created", groupId = "review-read.create-review-join-user", containerFactory = "createReviewJoinUserEventKafkaListener")
     public void listenCreateReviewJoinUser(CreateReviewJoinUserEvent event) {
         String userUuid = event.getUserUuid();
         log.info("[Kafka] Received CreateReviewJoinUserEvent: {}", event);
