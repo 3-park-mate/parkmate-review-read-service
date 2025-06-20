@@ -1,6 +1,6 @@
 package com.parkmate.reviewreadservice.kafka.consumer;
 
-import com.parkmate.reviewreadservice.kafka.event.CreateReviewEvent;
+import com.parkmate.reviewreadservice.kafka.event.ReviewCreatedEvent;
 import com.parkmate.reviewreadservice.kafka.event.CreateReviewJoinUserEvent;
 import com.parkmate.reviewreadservice.reviewread.application.ReviewReadIntegrationService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ public class ReviewReadConsumer {
 
     private final ReviewReadIntegrationService reviewReadIntegrationService;
 
-    private final ConcurrentHashMap<String, CompletableFuture<CreateReviewEvent>> reviewFutureMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CompletableFuture<ReviewCreatedEvent>> reviewFutureMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, CompletableFuture<CreateReviewJoinUserEvent>> userFutureMap = new ConcurrentHashMap<>();
 
     @KafkaListener(topics = "review.review.created", groupId = "review-read.create-review", containerFactory = "createReviewEventKafkaListener")
-    public void listenCreateReview(CreateReviewEvent event) {
+    public void listenCreateReview(ReviewCreatedEvent event) {
         String userUuid = event.getUserUuid();
         log.info("[Kafka] Received CreateReviewEvent: {}", event);
 
@@ -43,7 +43,7 @@ public class ReviewReadConsumer {
     }
 
     private void attemptJoin(String userUuid) {
-        CompletableFuture<CreateReviewEvent> reviewFuture = reviewFutureMap.get(userUuid);
+        CompletableFuture<ReviewCreatedEvent> reviewFuture = reviewFutureMap.get(userUuid);
         CompletableFuture<CreateReviewJoinUserEvent> userFuture = userFutureMap.get(userUuid);
 
         if (reviewFuture != null && userFuture != null) {

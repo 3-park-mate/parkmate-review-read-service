@@ -1,8 +1,9 @@
 package com.parkmate.reviewreadservice.kafka.config;
 
-import com.parkmate.reviewreadservice.kafka.event.CreateReviewEvent;
+import com.parkmate.reviewreadservice.kafka.event.ReviewCreatedEvent;
 import com.parkmate.reviewreadservice.kafka.event.CreateReviewJoinUserEvent;
-import com.parkmate.reviewreadservice.kafka.event.UpdateUserProfileEvent;
+import com.parkmate.reviewreadservice.kafka.event.ReviewReactionUpdatedEvent;
+import com.parkmate.reviewreadservice.kafka.event.UserProfileUpdatedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +25,8 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, CreateReviewEvent> createReviewEventConsumerFactory() {
-        JsonDeserializer<CreateReviewEvent> deserializer = new JsonDeserializer<>(CreateReviewEvent.class, false);
+    public ConsumerFactory<String, ReviewCreatedEvent> createReviewEventConsumerFactory() {
+        JsonDeserializer<ReviewCreatedEvent> deserializer = new JsonDeserializer<>(ReviewCreatedEvent.class, false);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.setUseTypeMapperForKey(false);
         deserializer.addTrustedPackages("*");
@@ -39,8 +40,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean(name = "createReviewEventKafkaListener")
-    public ConcurrentKafkaListenerContainerFactory<String, CreateReviewEvent> createReviewEventKafkaListener() {
-        ConcurrentKafkaListenerContainerFactory<String, CreateReviewEvent> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, ReviewCreatedEvent> createReviewEventKafkaListener() {
+        ConcurrentKafkaListenerContainerFactory<String, ReviewCreatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(createReviewEventConsumerFactory());
         return factory;
@@ -70,8 +71,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, UpdateUserProfileEvent> updateUserProfileEventConsumerFactory() {
-        JsonDeserializer<UpdateUserProfileEvent> deserializer = new JsonDeserializer<>(UpdateUserProfileEvent.class, false);
+    public ConsumerFactory<String, UserProfileUpdatedEvent> updateUserProfileEventConsumerFactory() {
+        JsonDeserializer<UserProfileUpdatedEvent> deserializer = new JsonDeserializer<>(UserProfileUpdatedEvent.class, false);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.setUseTypeMapperForKey(false);
         deserializer.addTrustedPackages("*");
@@ -85,10 +86,33 @@ public class KafkaConsumerConfig {
     }
 
     @Bean(name = "updateUserProfileEventKafkaListener")
-    public ConcurrentKafkaListenerContainerFactory<String, UpdateUserProfileEvent> updateUserProfileEventKafkaListener() {
-        ConcurrentKafkaListenerContainerFactory<String, UpdateUserProfileEvent> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, UserProfileUpdatedEvent> updateUserProfileEventKafkaListener() {
+        ConcurrentKafkaListenerContainerFactory<String, UserProfileUpdatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(updateUserProfileEventConsumerFactory());
+        return factory;
+    }
+    @Bean
+    public ConsumerFactory<String, ReviewReactionUpdatedEvent> reviewReactionUpdatedEventConsumerFactory() {
+        JsonDeserializer<ReviewReactionUpdatedEvent> deserializer =
+                new JsonDeserializer<>(ReviewReactionUpdatedEvent.class, false);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.setUseTypeMapperForKey(false);
+        deserializer.addTrustedPackages("*");
+
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "review-read.reaction-updated");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+    }
+
+    @Bean(name = "reviewReactionUpdatedEventKafkaListener")
+    public ConcurrentKafkaListenerContainerFactory<String, ReviewReactionUpdatedEvent> reviewReactionUpdatedEventKafkaListener() {
+        ConcurrentKafkaListenerContainerFactory<String, ReviewReactionUpdatedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(reviewReactionUpdatedEventConsumerFactory());
         return factory;
     }
 }

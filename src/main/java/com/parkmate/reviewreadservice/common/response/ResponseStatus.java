@@ -11,6 +11,7 @@ public enum ResponseStatus {
     // ✅ 2xx: 성공
 
     // ❌ 4xx: 클라이언트 오류
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "해당 리뷰를 찾을 수 없습니다."),
 
 
     // ❗ 5xx: 서버 오류

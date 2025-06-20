@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class UpdateUserProfileEvent {
+public class UserProfileUpdatedEvent {
 
     private String userUuid;
     private String name;
@@ -17,9 +17,9 @@ public class UpdateUserProfileEvent {
     private LocalDateTime timestamp;
 
     @Builder
-    private UpdateUserProfileEvent(String userUuid,
-                                   String name,
-                                   LocalDateTime timestamp) {
+    private UserProfileUpdatedEvent(String userUuid,
+                                    String name,
+                                    LocalDateTime timestamp) {
 
         this.userUuid = userUuid;
         this.name = name;

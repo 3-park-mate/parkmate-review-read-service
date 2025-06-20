@@ -1,6 +1,6 @@
 package com.parkmate.reviewreadservice.kafka.consumer;
 
-import com.parkmate.reviewreadservice.kafka.event.UpdateUserProfileEvent;
+import com.parkmate.reviewreadservice.kafka.event.UserProfileUpdatedEvent;
 import com.parkmate.reviewreadservice.reviewread.application.ReviewReadIntegrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UpdateUserProfileConsumer {
+public class UserProfileUpdatedConsumer {
 
     private final ReviewReadIntegrationService reviewReadIntegrationService;
 
@@ -19,7 +19,7 @@ public class UpdateUserProfileConsumer {
             groupId = "review-read-group",
             containerFactory = "updateUserProfileEventKafkaListener"
     )
-    public void listenUpdateUserProfile(UpdateUserProfileEvent event) {
+    public void listenUpdateUserProfile(UserProfileUpdatedEvent event) {
         log.info("[Kafka] Received UpdateUserProfileEvent: {}", event);
 
         reviewReadIntegrationService.updateUserNameInReviews(

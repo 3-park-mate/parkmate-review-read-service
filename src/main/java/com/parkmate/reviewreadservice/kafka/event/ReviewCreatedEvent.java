@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class CreateReviewEvent {
+public class ReviewCreatedEvent {
 
     private String reviewUuid;
     private String userUuid;
@@ -26,7 +26,7 @@ public class CreateReviewEvent {
     private LocalDateTime createdAt;
 
     @Builder
-    private CreateReviewEvent(
+    private ReviewCreatedEvent(
             String reviewUuid,
             String userUuid,
             String parkingLotUuid,
