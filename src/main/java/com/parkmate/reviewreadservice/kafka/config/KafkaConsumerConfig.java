@@ -32,7 +32,7 @@ public class KafkaConsumerConfig {
 
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "create-review-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "review-read.create-review");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
@@ -55,7 +55,7 @@ public class KafkaConsumerConfig {
 
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "create-review-join-user-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "review-read.create-review-join-user");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
