@@ -1,6 +1,9 @@
 package com.parkmate.reviewreadservice.reviewread.application;
 
-import com.parkmate.reviewreadservice.kafka.event.CreateReviewEvent;
+import com.parkmate.reviewreadservice.common.exception.BaseException;
+import com.parkmate.reviewreadservice.common.response.ResponseStatus;
+import com.parkmate.reviewreadservice.kafka.event.ReactionType;
+import com.parkmate.reviewreadservice.kafka.event.ReviewCreatedEvent;
 import com.parkmate.reviewreadservice.kafka.event.CreateReviewJoinUserEvent;
 import com.parkmate.reviewreadservice.reviewread.domain.ReviewRead;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewMongoRepository;
@@ -8,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -19,7 +23,7 @@ public class ReviewReadIntegrationServiceImpl implements ReviewReadIntegrationSe
 
     @Transactional
     @Override
-    public void createReviewReadDocument(CreateReviewEvent reviewEvent, CreateReviewJoinUserEvent userEvent) {
+    public void createReviewReadDocument(ReviewCreatedEvent reviewEvent, CreateReviewJoinUserEvent userEvent) {
         ReviewRead reviewRead = ReviewRead.builder()
                 .reviewUuid(reviewEvent.getReviewUuid())
                 .userUuid(reviewEvent.getUserUuid())
@@ -52,5 +56,18 @@ public class ReviewReadIntegrationServiceImpl implements ReviewReadIntegrationSe
 
         reviewMongoRepository.saveAll(reviews);
         log.info("[Mongo] 사용자 이름 일괄 업데이트 완료 - userUuid: {}, newName: {}", userUuid, name);
+    }
+
+    @Transactional
+    @Override
+    public void updateReaction(String reviewUuid, ReactionType newReaction, ReactionType previousReaction, LocalDateTime updatedAt) {
+        ReviewRead reviewRead = reviewMongoRepository.findByReviewUuid(reviewUuid)
+                .orElseThrow(() -> new BaseException(ResponseStatus.REVIEW_NOT_FOUND));
+
+        reviewRead.updateReaction(newReaction, previousReaction, updatedAt);
+        reviewMongoRepository.save(reviewRead);
+
+        log.info("[Mongo] 리액션 정보 업데이트 완료: reviewUuid={}, like={}, dislike={}",
+                reviewUuid, reviewRead.getLikeCount(), reviewRead.getDislikeCount());
     }
 }

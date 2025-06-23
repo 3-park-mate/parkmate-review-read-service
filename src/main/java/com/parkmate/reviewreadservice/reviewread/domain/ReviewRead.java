@@ -1,5 +1,6 @@
 package com.parkmate.reviewreadservice.reviewread.domain;
 
+import com.parkmate.reviewreadservice.kafka.event.ReactionType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,8 +25,8 @@ public class ReviewRead  {
     private String parkingLotUuid;
     private String content;
     private List<String> imageUrls;
-    private int likeCount;
-    private int dislikeCount;
+    private int likeCount = 0;
+    private int dislikeCount = 0;
     private int rating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -58,4 +59,18 @@ public class ReviewRead  {
         this.name = name;
     }
 
+    public void updateReaction(ReactionType newReaction,
+                               ReactionType previousReaction,
+                               LocalDateTime updatedAt) {
+
+        if (previousReaction != null) {
+            if (previousReaction == ReactionType.LIKE) this.likeCount--;
+            else if (previousReaction == ReactionType.DISLIKE) this.dislikeCount--;
+        }
+
+        if (newReaction == ReactionType.LIKE) this.likeCount++;
+        else if (newReaction == ReactionType.DISLIKE) this.dislikeCount++;
+
+        this.updatedAt = updatedAt;
+    }
 }

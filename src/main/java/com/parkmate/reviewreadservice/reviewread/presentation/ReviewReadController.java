@@ -3,6 +3,7 @@ package com.parkmate.reviewreadservice.reviewread.presentation;
 import com.parkmate.reviewreadservice.common.response.ApiResponse;
 import com.parkmate.reviewreadservice.reviewread.application.ReviewReadService;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListResponseDto;
+import com.parkmate.reviewreadservice.reviewread.vo.response.ReactionTypeResponseVo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,29 @@ public class ReviewReadController {
                 HttpStatus.OK,
                 "리뷰 목록 조회 성공",
                 reviewReadService.getReviews(parkingLotUuid, cursor, size)
+        );
+    }
+
+    @Operation(
+            summary = "사용자 리액션 타입 조회",
+            description = """
+                특정 리뷰에 대해 사용자가 남긴 리액션 타입을 조회합니다.
+
+                - `reviewUuid`는 리뷰 고유 UUID입니다.
+                - `X-User-UUID`는 헤더로 전달되는 사용자 고유 UUID입니다.
+                - 응답은 사용자가 해당 리뷰에 남긴 리액션 타입(예: LIKE, DISLIKE, NONE)입니다.
+            """,
+            tags = {"REVIEW-READ-SERVICE"}
+    )
+    @GetMapping("/{reviewUuid}/reaction")
+    public ApiResponse<ReactionTypeResponseVo> getUserReactionType(
+            @PathVariable String reviewUuid,
+            @RequestHeader("X-User-UUID") String userUuid
+    ) {
+        return ApiResponse.of(
+                HttpStatus.OK,
+                "사용자 리액션 조회 성공",
+                ReactionTypeResponseVo.of(reviewReadService.getUserReactionType(reviewUuid, userUuid))
         );
     }
 }

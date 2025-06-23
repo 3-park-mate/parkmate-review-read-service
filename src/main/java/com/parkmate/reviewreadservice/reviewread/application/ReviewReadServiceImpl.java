@@ -1,9 +1,12 @@
 package com.parkmate.reviewreadservice.reviewread.application;
 
+import com.parkmate.reviewreadservice.kafka.event.ReactionType;
+import com.parkmate.reviewreadservice.reviewread.domain.ReviewReactionRead;
 import com.parkmate.reviewreadservice.reviewread.domain.ReviewRead;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListResponseDto;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListItemDto;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewMongoRepository;
+import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewReactionReadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +22,7 @@ import java.util.List;
 public class ReviewReadServiceImpl implements ReviewReadService {
 
     private final ReviewMongoRepository reviewMongoRepository;
+    private final ReviewReactionReadRepository reviewReactionReadRepository;
 
     @Transactional
     @Override
@@ -46,5 +50,14 @@ public class ReviewReadServiceImpl implements ReviewReadService {
                 .toList();
 
         return ReviewListResponseDto.of(nextCursor, hasNext, content);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ReactionType getUserReactionType(String reviewUuid, String userUuid) {
+
+        return reviewReactionReadRepository.findByReviewUuidAndUserUuid(reviewUuid, userUuid)
+                .map(ReviewReactionRead::getReactionType)
+                .orElse(ReactionType.NONE);
     }
 }
