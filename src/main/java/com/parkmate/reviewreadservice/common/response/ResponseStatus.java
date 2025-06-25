@@ -12,7 +12,7 @@ public enum ResponseStatus {
 
     // ❌ 4xx: 클라이언트 오류
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "해당 리뷰를 찾을 수 없습니다."),
-
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "리소스가 존재하지 않습니다."),
 
     // ❗ 5xx: 서버 오류
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, false, 500, "서버 내부 오류가 발생했습니다.");
