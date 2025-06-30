@@ -35,7 +35,7 @@ public class SwaggerConfig {
     private Info apiInfo() {
         return new Info()
                 .title("REVIEW-READ-SERVICE API DOCS")
-                .description("reviewreadservice API 테스트를 위한 Swagger UI")
+                .description("review-read-service API 테스트를 위한 Swagger UI")
                 .version("1.0.0");
     }
 }
