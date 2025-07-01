@@ -3,6 +3,7 @@ package com.parkmate.reviewreadservice.reviewread.presentation;
 import com.parkmate.reviewreadservice.common.response.ApiResponse;
 import com.parkmate.reviewreadservice.reviewread.application.ReviewReadService;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListResponseDto;
+import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewSummaryResponseDto;
 import com.parkmate.reviewreadservice.reviewread.vo.response.ReactionTypeResponseVo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,27 @@ public class ReviewReadController {
                 HttpStatus.OK,
                 "사용자 리액션 조회 성공",
                 ReactionTypeResponseVo.of(reviewReadService.getUserReactionType(reviewUuid, userUuid))
+        );
+    }
+
+    @Operation(
+            summary = "리뷰 요약 정보 조회",
+            description = """
+            특정 주차장의 리뷰 평균 평점과 총 리뷰 개수를 조회합니다.
+
+            - 실시간 리뷰(MongoDB 등) + 배치 집계(RDB)를 합산합니다.
+            - `parkingLotUuid`는 필수입니다.
+        """,
+            tags = {"REVIEW-READ-SERVICE"}
+    )
+    @GetMapping("/summary")
+    public ApiResponse<ReviewSummaryResponseDto> getReviewSummary(
+            @RequestParam String parkingLotUuid
+    ) {
+        return ApiResponse.of(
+                HttpStatus.OK,
+                "리뷰 요약 조회 성공",
+                reviewReadService.getReviewSummary(parkingLotUuid)
         );
     }
 }

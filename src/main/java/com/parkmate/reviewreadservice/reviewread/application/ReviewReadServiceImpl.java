@@ -1,12 +1,15 @@
 package com.parkmate.reviewreadservice.reviewread.application;
 
+import com.parkmate.reviewreadservice.common.response.ApiResponse;
 import com.parkmate.reviewreadservice.kafka.event.ReactionType;
 import com.parkmate.reviewreadservice.reviewread.domain.ReviewReactionRead;
 import com.parkmate.reviewreadservice.reviewread.domain.ReviewRead;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListResponseDto;
 import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewListItemDto;
+import com.parkmate.reviewreadservice.reviewread.dto.response.ReviewSummaryResponseDto;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewMongoRepository;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewReactionReadRepository;
+import com.parkmate.reviewreadservice.reviewread.infrastructure.client.ReviewSummaryFeignClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,7 @@ public class ReviewReadServiceImpl implements ReviewReadService {
 
     private final ReviewMongoRepository reviewMongoRepository;
     private final ReviewReactionReadRepository reviewReactionReadRepository;
+    private final ReviewSummaryFeignClient reviewSummaryFeignClient;
 
     @Transactional
     @Override
@@ -59,5 +63,12 @@ public class ReviewReadServiceImpl implements ReviewReadService {
         return reviewReactionReadRepository.findByReviewUuidAndUserUuid(reviewUuid, userUuid)
                 .map(ReviewReactionRead::getReactionType)
                 .orElse(ReactionType.NONE);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ReviewSummaryResponseDto getReviewSummary(String parkingLotUuid) {
+        ApiResponse<ReviewSummaryResponseDto> response = reviewSummaryFeignClient.getReviewSummary(parkingLotUuid);
+        return response.getData();
     }
 }

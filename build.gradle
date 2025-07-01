@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+	// openfeign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
