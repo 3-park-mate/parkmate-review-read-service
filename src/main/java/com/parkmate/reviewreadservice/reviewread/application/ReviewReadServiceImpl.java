@@ -11,13 +11,15 @@ import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewMongoRepos
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewReactionReadRepository;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.client.ReviewSummaryFeignClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Instant;
+import org.springframework.data.mongodb.core.query.Query;
+
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -27,29 +29,32 @@ public class ReviewReadServiceImpl implements ReviewReadService {
     private final ReviewMongoRepository reviewMongoRepository;
     private final ReviewReactionReadRepository reviewReactionReadRepository;
     private final ReviewSummaryFeignClient reviewSummaryFeignClient;
+    private final MongoTemplate mongoTemplate;
 
     @Transactional
     @Override
     public ReviewListResponseDto getReviews(String parkingLotUuid, String cursor, int size) {
-        Pageable pageable = PageRequest.of(0, size + 1); // +1 for hasNext check
-        List<ReviewRead> reviews;
+        Criteria criteria = Criteria.where("parkingLotUuid").is(parkingLotUuid);
 
-        if (cursor == null) {
-            reviews = reviewMongoRepository.findByParkingLotUuidOrderByCreatedAtDesc(parkingLotUuid, pageable);
-        } else {
-            Instant cursorInstant = LocalDateTime.parse(cursor)
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant();
-            reviews = reviewMongoRepository.findByParkingLotUuidAndCreatedAtBeforeOrderByCreatedAtDesc(
-                    parkingLotUuid, cursorInstant, pageable);
+        if (cursor != null) {
+            // 커서 → LocalDateTime 변환
+            LocalDateTime cursorTime = LocalDateTime.parse(cursor, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+            criteria = criteria.and("createdAt").lt(cursorTime); // 최신순이므로 이전 시간 기준
         }
 
-        boolean hasNext = reviews.size() > size;
-        List<ReviewRead> pageReviews = hasNext ? reviews.subList(0, size) : reviews;
+        Query query = new Query(criteria)
+                .with(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .limit(size + 1); // hasNext 판별용 +1
 
-        String nextCursor = pageReviews.isEmpty() ? null : pageReviews.get(pageReviews.size() - 1).getCreatedAt().toString();
+        List<ReviewRead> results = mongoTemplate.find(query, ReviewRead.class);
 
-        List<ReviewListItemDto> content = pageReviews.stream()
+        boolean hasNext = results.size() > size;
+        List<ReviewRead> page = hasNext ? results.subList(0, size) : results;
+
+        String nextCursor = page.isEmpty() ? null :
+                page.get(page.size() - 1).getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+
+        List<ReviewListItemDto> content = page.stream()
                 .map(ReviewListItemDto::fromEntity)
                 .toList();
 
