@@ -11,7 +11,7 @@ services:
     ports:
       - "8086:8086"
     env_file:
-      - .env
+      - /home/ubuntu/env/.env.review-read
     networks:
       - backend
 
