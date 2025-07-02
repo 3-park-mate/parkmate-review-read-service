@@ -18,6 +18,7 @@ public class ReviewRead  {
 
     @Id
     private String id;
+
     @Indexed
     private String reviewUuid;
     private String userUuid;
@@ -30,9 +31,13 @@ public class ReviewRead  {
     private int rating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+
+    private ReviewStatus status = ReviewStatus.ACTIVE;
 
     @Builder
-    public ReviewRead(String reviewUuid,
+    public ReviewRead(String id,
+                      String reviewUuid,
                       String userUuid,
                       String name,
                       String parkingLotUuid,
@@ -42,6 +47,7 @@ public class ReviewRead  {
                       int dislikeCount,
                       int rating) {
 
+        this.id = id;
         this.reviewUuid = reviewUuid;
         this.userUuid = userUuid;
         this.name = name;
@@ -53,6 +59,7 @@ public class ReviewRead  {
         this.rating = rating;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.status = ReviewStatus.ACTIVE;
     }
 
     public void updateName(String name) {
@@ -72,5 +79,17 @@ public class ReviewRead  {
         else if (newReaction == ReactionType.DISLIKE) this.dislikeCount++;
 
         this.updatedAt = updatedAt;
+    }
+    public void updateReview(String content, int rating, List<String> imageUrls, LocalDateTime updatedAt) {
+        this.content = content;
+        this.rating = rating;
+        this.imageUrls = imageUrls;
+        this.updatedAt = updatedAt;
+    }
+
+    public void markAsDeleted(LocalDateTime deletedAt) {
+        this.status = ReviewStatus.DELETED;
+        this.deletedAt = deletedAt;
+        this.updatedAt = deletedAt;
     }
 }
