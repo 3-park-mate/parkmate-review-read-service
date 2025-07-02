@@ -18,6 +18,7 @@ public class ReviewListItemDto {
     private int rating;
     private int likeCount;
     private int dislikeCount;
+    private String createdAt;
 
     @Builder
     private ReviewListItemDto(String reviewUuid,
@@ -27,7 +28,8 @@ public class ReviewListItemDto {
                               List<String> imageUrls,
                               int rating,
                               int likeCount,
-                              int dislikeCount) {
+                              int dislikeCount,
+                              String createdAt) {
         this.reviewUuid = reviewUuid;
         this.userUuid = userUuid;
         this.name = name;
@@ -36,6 +38,7 @@ public class ReviewListItemDto {
         this.rating = rating;
         this.likeCount = likeCount;
         this.dislikeCount = dislikeCount;
+        this.createdAt = createdAt;
     }
 
     public static ReviewListItemDto fromEntity(ReviewRead reviewRead) {
@@ -48,6 +51,9 @@ public class ReviewListItemDto {
                 .rating(reviewRead.getRating())
                 .likeCount(reviewRead.getLikeCount())
                 .dislikeCount(reviewRead.getDislikeCount())
+                .createdAt(reviewRead.getCreatedAt() != null
+                ? reviewRead.getCreatedAt().toString()
+                : null)
                 .build();
     }
 }

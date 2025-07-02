@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +16,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewRead  {
 
-   @Id
+    @Id
+    private String id;
+    @Indexed
     private String reviewUuid;
-
     private String userUuid;
     private String name;
     private String parkingLotUuid;
