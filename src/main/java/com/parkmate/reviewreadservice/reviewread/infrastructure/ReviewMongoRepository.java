@@ -1,6 +1,7 @@
 package com.parkmate.reviewreadservice.reviewread.infrastructure;
 
 import com.parkmate.reviewreadservice.reviewread.domain.ReviewRead;
+import com.parkmate.reviewreadservice.reviewread.domain.ReviewStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,7 @@ public interface ReviewMongoRepository extends MongoRepository<ReviewRead, Strin
     List<ReviewRead> findAllByUserUuid(String userUuid);
 
     Optional<ReviewRead> findByReviewUuid(String reviewUuid);
+
+    Optional<ReviewRead> findByReviewUuidAndStatus(String reviewUuid, ReviewStatus status);
+
 }

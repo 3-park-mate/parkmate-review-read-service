@@ -1,6 +1,7 @@
 package com.parkmate.reviewreadservice.kafka.consumer;
 
 import com.parkmate.reviewreadservice.kafka.event.ReviewReactionUpdatedEvent;
+import com.parkmate.reviewreadservice.reviewread.application.ReviewReadIntegrationService;
 import com.parkmate.reviewreadservice.reviewread.infrastructure.ReviewMongoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,23 +13,21 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReviewReactionUpdatedConsumer {
 
-    private final ReviewMongoRepository reviewMongoRepository;
+    private final ReviewReadIntegrationService reviewReadIntegrationService;
 
     @KafkaListener(
             topics = "review.review-reactions.updated",
-            groupId = "review-read-group"
+            groupId = "review-read.reaction-updated",
+            containerFactory = "reviewReactionUpdatedEventKafkaListener"
     )
-    public void consume(ReviewReactionUpdatedEvent event) {
+    public void listenReactionUpdated(ReviewReactionUpdatedEvent event) {
         log.info("[Kafka] Received ReviewReactionUpdatedEvent: {}", event);
 
-        reviewMongoRepository.findByReviewUuid(event.getReviewUuid())
-                .ifPresent(review -> {
-                    review.updateReaction(
-                            event.getReactionType(),
-                            event.getPreviousReactionType(),
-                            event.getTimestamp());
-                    reviewMongoRepository.save(review);
-                    log.info("[Mongo] 리액션 반영 완료 - reviewUuid: {}", event.getReviewUuid());
-                });
+        reviewReadIntegrationService.updateReaction(
+                event.getReviewUuid(),
+                event.getReactionType(),
+                event.getPreviousReactionType(),
+                event.getTimestamp()
+        );
     }
 }

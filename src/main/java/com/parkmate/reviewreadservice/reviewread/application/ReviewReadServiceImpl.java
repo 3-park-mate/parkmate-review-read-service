@@ -34,17 +34,20 @@ public class ReviewReadServiceImpl implements ReviewReadService {
     @Transactional
     @Override
     public ReviewListResponseDto getReviews(String parkingLotUuid, String cursor, int size) {
-        Criteria criteria = Criteria.where("parkingLotUuid").is(parkingLotUuid);
+        Criteria criteria = new Criteria()
+                .andOperator(
+                        Criteria.where("parkingLotUuid").is(parkingLotUuid),
+                        Criteria.where("status").is("ACTIVE")
+                );
 
         if (cursor != null) {
-            // 커서 → LocalDateTime 변환
             LocalDateTime cursorTime = LocalDateTime.parse(cursor, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-            criteria = criteria.and("createdAt").lt(cursorTime); // 최신순이므로 이전 시간 기준
+            criteria = criteria.and("createdAt").lt(cursorTime);
         }
 
         Query query = new Query(criteria)
                 .with(Sort.by(Sort.Direction.DESC, "createdAt"))
-                .limit(size + 1); // hasNext 판별용 +1
+                .limit(size + 1);
 
         List<ReviewRead> results = mongoTemplate.find(query, ReviewRead.class);
 

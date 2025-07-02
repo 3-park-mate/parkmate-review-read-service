@@ -12,6 +12,7 @@ public enum ResponseStatus {
 
     // ❌ 4xx: 클라이언트 오류
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "해당 리뷰를 찾을 수 없습니다."),
+    REVIEW_ALREADY_DELETED(HttpStatus.BAD_REQUEST, false, 400, "이미 삭제된 리뷰입니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "리소스가 존재하지 않습니다."),
 
     // ❗ 5xx: 서버 오류
